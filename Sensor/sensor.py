@@ -31,7 +31,7 @@ class Sensor:
     # Stops the polling thread
     def stop_polling(self):
         if self.__thread_started__.is_set():
-            self.__thread_started__.unset()
+            self.__thread_started__.clear()
             self.__poll_thread__.join()
 
     # Returns the difference of the most recent value and the most recent value for a given level

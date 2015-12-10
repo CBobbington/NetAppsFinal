@@ -10,7 +10,7 @@ class ButtonListener:
 		self._thread.setDaemon(True)
 		
 		self._is_triggered = threading.Event()
-		self._is_triggered.unset()
+		self._is_triggered.clear()
 		
 		GPIO.setwarnings(False)
 		GPIO.setmode(GPIO.BOARD)
@@ -26,7 +26,7 @@ class ButtonListener:
 			
 	def stop(self):
 		if self._thread_staretd.is_set():
-			self._thread_started.unset()
+			self._thread_started.clear()
 			self._thread.join()
 			
 	def button_pressed(self):
