@@ -8,10 +8,11 @@ import json, shelve
 import RPi.GPIO as GPIO
 import pika
 import time, math
+import threading
 
 class CentralServer:
 	_server_name = "CentralServer"
-	_vhost = "/sense"
+	_vhost = ""
 	_exchange = "sense_net"
 	_routing_key = "central_response"
 		
@@ -63,17 +64,16 @@ class CentralServer:
 			self._chan.exchange_declare(exchange=self._exchange, type="topic", auto_delete=True)
 			self._chan.queue_bind(exchange=self._exchange, queue=queueResult.method.queue, routing_key=self._routing_key)
 			self._chan.basic_consume(
-				lambda ch, method, properties, body: self._consume(ch, method, properties, body),
+				lambda ch, method, prop, body: self._consume(ch, method, prop, body),
 				queueResult.method.queue, 
 				no_ack=True, 
 				exclusive=True, 
-				arguments=(self)
 			)
 		
 		# Configure zeroconf to broadcast this service
 		self._zeroconf = Zeroconf()
 
-		server_ip, ifaceName = self._getServiceIP()
+		server_ip, ifaceName = self._get_service_ip()
 		if server_ip is None:
 			self._log.error("Could not determine server IP")
 			return False
@@ -87,8 +87,7 @@ class CentralServer:
 			{
 				"virtual_host": self._vhost,
 				"exchange_name": self._exchange, 
-				"response_key": self._response_key, 
-				"connect_key": self._connect_key
+				"routing_key": self._routing_key, 
 			},
 			None)
 		
@@ -166,10 +165,10 @@ class CentralServer:
 		tempChan.basic_publish(exchange=self._exchange, routing_key="node")
 		tempConn.close()
 		
-	def _consume(self, ch, method, properties, body, args):
+	def _consume(self, ch, method, properties, body):
 		print "MSG: %s" % body
 
 if __name__ == "__main__":
-	server = CentralServer(17)
+	server = CentralServer(22)
 	server.start()
 		
