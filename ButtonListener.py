@@ -37,6 +37,6 @@ class ButtonListener:
 			if GPIO.input(self._pin):
 				self._is_triggered.set()
 			else:
-				self._is_triggered.unset()
+				self._is_triggered.clear()
 		self._is_triggered.unset()
 		
