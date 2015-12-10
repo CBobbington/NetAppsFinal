@@ -146,20 +146,19 @@ class CentralServer:
 					state = "IDLE_INIT"
 		except KeyboardInterrupt:
 			pass
+		finally:
+			self._connect_chan.stop_consuming()
+			self._response_chan.stop_consuming()
+			self._log.info("Shutting down server...")
+			self._log.info("Closing connection with RabbitMQ")
+			if self._conn is not None:
+				self._conn.close()
 			
-	def stop(self):
-		self._connect_chan.stop_consuming()
-		self._response_chan.stop_consuming()
-		self._log.info("Shutting down server...")
-		self._log.info("Closing connection with RabbitMQ")
-		if self._conn is not None:
-			self._conn.close()
+			self._log.info("Unregistering server")
+			self._zeroconf.unregister_service(self._zeroconf_info)
+			self._zeroconf.close()
 		
-		self._log.info("Unregistering server")
-		self._zeroconf.unregister_service(self._zeroconf_info)
-		self._zeroconf.close()
-	
-		self._log.info("Shutdown complete!")
+			self._log.info("Shutdown complete!")
 		
 	def ping(self):
 		self._responses = []
@@ -172,4 +171,8 @@ class CentralServer:
 		
 	def _consume(self, ch, method, properties, body, args):
 		print "MSG: %s" % body
+
+if __name__ == "__main__":
+	server = CentralServer(17)
+	server.start()
 		
