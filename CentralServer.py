@@ -45,7 +45,7 @@ class CentralServer:
 			self._button_listener = ButtonListener.Listener(listen_pin)
 		except RuntimeError:
 			self._log.error("Could not configure GPIO pins!")
-			return False
+			raise RuntimeError("Error configuring GPIO")
 			
 		self._new_connections = []
 		self._accept_responses = threading.Event()
@@ -57,7 +57,7 @@ class CentralServer:
 		queueResult = self._chan.queue_declare(exclusive=True)
 		if queueResult is None:
 			self._log.error("Could not create connect queue")
-			return False
+			raise RuntimeError("Error configuring RabbitMQ")
 		else:
 			self._log.info("Created queue \'%s\'" % (queueResult.method.queue,))
 			self._log.info("Using exchange \'%s\'" % (self._exchange,))
@@ -76,7 +76,7 @@ class CentralServer:
 		server_ip, ifaceName = self._get_service_ip()
 		if server_ip is None:
 			self._log.error("Could not determine server IP")
-			return False
+			raise RuntimeError("Error finding server IP")
 		else:
 			self._log.info("Broadcasting with IP %s (%s)" % (server_ip, ifaceName))
 		
@@ -95,8 +95,6 @@ class CentralServer:
 			self._zeroconf.register_service(self._zeroconf_info)
 		except Zeroconf.NonUniqueNameException:
 			self._log.warn("Service with name \'%s\' already broadcasting on this network!" % (self._get_service_name(),))
-				
-		return True
 		
 	def start(self):
 		state = "IDLE_INIT"
