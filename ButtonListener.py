@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 import threading
 
-class ButtonListener:
+class Listener:
 	def __init__(self, pin):
 		self._pin = pin
 		
