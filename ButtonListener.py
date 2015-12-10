@@ -20,7 +20,7 @@ class ButtonListener:
 			raise RuntimeError("Could not configure GPIO pins")
 		
 	def start(self):
-		if not self._thread_started.is_set() and pin is not None:
+		if not self._thread_started.is_set() and self._pin is not None:
 			self._thread_started.set()
 			self._thread.start()
 			

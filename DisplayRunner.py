@@ -2,26 +2,14 @@ import RPi.GPIO as GPIO
 import threading
 
 class DisplayRunner:
-	def __init__(self, pin):
-		self._pin = pin
+	def __init__(self):
 		self._mode = 0
 		
 		self._thread_started = threading.Event()
 		self._thread = threading.Thread(target=self._runner)
 		self._thread.setDaemon(True)
-		
-		self._is_triggered = threading.Event()
-		self._is_triggered.clear()
-		
-		GPIO.setwarnings(False)
-		GPIO.setmode(GPIO.BOARD)
-		try:
-			GPIO.setup(pin, GPIO.IN)
-		except RuntimeError:
-			raise RuntimeError("Could not configure GPIO pins")
-		
 	def start(self):
-		if not self._thread_started.is_set() and pin is not None:
+		if not self._thread_started.is_set() and self._mode:
 			self._thread_started.set()
 			self._thread.start()
 			
