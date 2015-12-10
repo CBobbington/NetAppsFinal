@@ -19,17 +19,17 @@ class ButtonListener:
 		except RuntimeError:
 			raise RuntimeError("Could not configure GPIO pins")
 		
-	def start():
+	def start(self):
 		if not self._thread_started.is_set() and pin is not None:
 			self._thread_started.set()
 			self._thread.start()
 			
-	def stop():
+	def stop(self):
 		if self._thread_staretd.is_set():
 			self._thread_started.unset()
 			self._thread.join()
 			
-	def button_pressed():
+	def button_pressed(self):
 		return self._is_triggered.is_set()
 	
 	def _listener(self):

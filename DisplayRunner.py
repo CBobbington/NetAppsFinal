@@ -6,7 +6,7 @@ class DisplayRunner:
 		self._pin = pin
 		self._mode = 0
 		
-		self._thread_started = theading.Event()
+		self._thread_started = threading.Event()
 		self._thread = threading.Thread(target=self._runner)
 		self._thread.setDaemon(True)
 		
