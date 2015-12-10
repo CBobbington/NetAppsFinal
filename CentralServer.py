@@ -64,7 +64,13 @@ class CentralServer:
 			self._log.info("Using exchange \'%s\'" % (self._exchange,))
 			self._response_chan.exchange_declare(exchange=self._exchange, type="topic", auto_delete=True)
 			self._response_chan.queue_bind(exchange=self._exchange, queue=queueResult.method.queue, routing_key=self._response_key)
-			self._response_chan.basic_consume(self._response_consumer, queueResult.method.queue, no_ack=True, exclusive=True, arguments=(self))
+			self._response_chan.basic_consume(
+				lambda ch, method, properties, body: self._response_consumer(ch, method, properties, body), 
+				queueResult.method.queue, 
+				no_ack=True, 
+				exclusive=True, 
+				arguments=(self)
+			)
 			
 		self._connect_chan = self._conn.channel()
 		self._new_connections = []
@@ -77,7 +83,13 @@ class CentralServer:
 			self._log.info("Using exchange \'%s\'" % (self._exchange,))
 			self._connect_chan.exchange_declare(exchange=self._exchange, type="topic", auto_delete=True)
 			self._connect_chan.queue_bind(exchange=self._exchange, queue=queueResult.method.queue, routing_key=self._connect_key)
-			self._connect_chan.basic_consume(self._connect_consumer, queueResult.method.queue, no_ack=True, exclusive=True, arguments=(self))
+			self._connect_chan.basic_consume(
+				lambda ch, method, properties, body: self._connection_consumer(ch, method, properties, body),
+				queueResult.method.queue, 
+				no_ack=True, 
+				exclusive=True, 
+				arguments=(self)
+			)
 		
 		# Configure zeroconf to broadcast this service
 		self._zeroconf = Zeroconf()
@@ -170,8 +182,8 @@ class CentralServer:
 		tempChan.basic_publish(exchange=self._exchange, routing_key="node")
 		tempConn.close()
 		
-	def _response_consumer(ch, method, properties, body, args):
+	def _response_consumer(self, ch, method, properties, body, args):
 		print "RESPONSE: %s" % body
 		
-	def _connect_consumer(ch, method, properties, body, args):
+	def _connection_consumer(self, ch, method, properties, body, args):
 		print "CONNECT: %s" % body
