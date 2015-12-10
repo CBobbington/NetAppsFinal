@@ -10,10 +10,10 @@ import pika
 import time, math
 
 class CentralServer:
-	self._server_name = "CentralServer"
-	self._vhost = "/sense"
-	self._exchange = "sense_net"
-	self._routing_key = "central_response"
+	_server_name = "CentralServer"
+	_vhost = "/sense"
+	_exchange = "sense_net"
+	_routing_key = "central_response"
 		
 	def _get_service_name(self):
 		return CentralServer._server_name + "._http._tcp.local."
