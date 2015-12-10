@@ -73,7 +73,7 @@ class CentralServer:
 			)
 			
 		self._connect_chan = self._conn.channel()
-		self._new_connections = []
+		self._connections = []
 		queueResult = self._connect_chan.queue_declare(exclusive=True)
 		if queueResult is None:
 			self._log.error("Could not create connect queue")
@@ -105,7 +105,12 @@ class CentralServer:
 			self._get_service_name(),
 			socket.inet_aton(server_ip),
 			5672, 0, 0,
-			{"exchange_name": self._exchange, "respone_key": self._response_key, "connect_key": self._connect_key, "virtual_host": self._vhost},
+			{
+				"virtual_host": self._vhost,
+				"exchange_name": self._exchange, 
+				"response_key": self._response_key, 
+				"connect_key": self._connect_key
+			},
 			None)
 		
 		try:
@@ -161,7 +166,8 @@ class CentralServer:
 			pass
 			
 	def stop(self):
-		self._chan.stop_consuming()
+		self._connect_chan.stop_consuming()
+		self._response_chan.stop_consuming()
 		self._log.info("Shutting down server...")
 		self._log.info("Closing connection with RabbitMQ")
 		if self._conn is not None:
