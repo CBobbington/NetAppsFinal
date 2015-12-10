@@ -10,17 +10,11 @@ import pika
 import time, math
 
 class CentralServer:
-	def __init__(self):
-		self._server_name = "CentralServer"
-		self._vhost = "/sense"
-		self._exchange = "sense_net"
-		self._routing_key = "central_response"
+	self._server_name = "CentralServer"
+	self._vhost = "/sense"
+	self._exchange = "sense_net"
+	self._routing_key = "central_response"
 		
-		self._gpio_en = None
-		self._log_fmt = logging.Formatter(fmt="%(asctime)s [%(levelname)-8s] %(message)s", datefmt="%b %d %H:%M:%S")
-		self._log = logging.getLogger()
-		self._log.setLevel(logging.INFO)
-	
 	def _get_service_name(self):
 		return CentralServer._server_name + "._http._tcp.local."
 		
@@ -36,7 +30,10 @@ class CentralServer:
 			return None, None
 		
 	def __init__(self, listen_pin):
-		self._state = None
+		self._gpio_en = None
+		self._log_fmt = logging.Formatter(fmt="%(asctime)s [%(levelname)-8s] %(message)s", datefmt="%b %d %H:%M:%S")
+		self._log = logging.getLogger()
+		self._log.setLevel(logging.INFO)
 		
 		streamHandler = logging.StreamHandler()
 		streamHandler.setLevel(logging.DEBUG)
