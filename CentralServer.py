@@ -14,8 +14,7 @@ class CentralServer:
 		self._server_name = "CentralServer"
 		self._vhost = "/sense"
 		self._exchange = "sense_net"
-		self._response_key = "central_response"
-		self._connection_key = "central_connect"
+		self._routing_key = "central_response"
 		
 		self._gpio_en = None
 		self._log_fmt = logging.Formatter(fmt="%(asctime)s [%(levelname)-8s] %(message)s", datefmt="%b %d %H:%M:%S")
@@ -49,42 +48,25 @@ class CentralServer:
 		except RuntimeError:
 			self._log.error("Could not configure GPIO pins!")
 			return False
+			
+		self._new_connections = []
+		self._accept_responses = threading.Event()
+		self._responses = []
 		
 		self._conn = pika.BlockingConnection(pika.ConnectionParameters(host="localhost", virtual_host=self._vhost))	
+		self._chan = self._conn.channel()
 		
-		self._response_chan = self._conn.channel()
-		self._responses = []
-		self._accept_responses = threading.Event()
-		queueResult = self._response_chan.queue_declare(exclusive=True)
-		if queueResult is None:
-			self._log.error("Could not create response queue")
-			return False
-		else:
-			self._log.info("Created response queue \'%s\'" % (queueResult.method.queue,))
-			self._log.info("Using exchange \'%s\'" % (self._exchange,))
-			self._response_chan.exchange_declare(exchange=self._exchange, type="topic", auto_delete=True)
-			self._response_chan.queue_bind(exchange=self._exchange, queue=queueResult.method.queue, routing_key=self._response_key)
-			self._response_chan.basic_consume(
-				lambda ch, method, properties, body: self._response_consumer(ch, method, properties, body), 
-				queueResult.method.queue, 
-				no_ack=True, 
-				exclusive=True, 
-				arguments=(self)
-			)
-			
-		self._connect_chan = self._conn.channel()
-		self._connections = []
-		queueResult = self._connect_chan.queue_declare(exclusive=True)
+		queueResult = self._chan.queue_declare(exclusive=True)
 		if queueResult is None:
 			self._log.error("Could not create connect queue")
 			return False
 		else:
-			self._log.info("Created connect queue \'%s\'" % (queueResult.method.queue,))
+			self._log.info("Created queue \'%s\'" % (queueResult.method.queue,))
 			self._log.info("Using exchange \'%s\'" % (self._exchange,))
-			self._connect_chan.exchange_declare(exchange=self._exchange, type="topic", auto_delete=True)
-			self._connect_chan.queue_bind(exchange=self._exchange, queue=queueResult.method.queue, routing_key=self._connect_key)
-			self._connect_chan.basic_consume(
-				lambda ch, method, properties, body: self._connection_consumer(ch, method, properties, body),
+			self._chan.exchange_declare(exchange=self._exchange, type="topic", auto_delete=True)
+			self._chan.queue_bind(exchange=self._exchange, queue=queueResult.method.queue, routing_key=self._routing_key)
+			self._chan.basic_consume(
+				lambda ch, method, properties, body: self._consume(ch, method, properties, body),
 				queueResult.method.queue, 
 				no_ack=True, 
 				exclusive=True, 
@@ -188,8 +170,6 @@ class CentralServer:
 		tempChan.basic_publish(exchange=self._exchange, routing_key="node")
 		tempConn.close()
 		
-	def _response_consumer(self, ch, method, properties, body, args):
-		print "RESPONSE: %s" % body
+	def _consume(self, ch, method, properties, body, args):
+		print "MSG: %s" % body
 		
-	def _connection_consumer(self, ch, method, properties, body, args):
-		print "CONNECT: %s" % body
