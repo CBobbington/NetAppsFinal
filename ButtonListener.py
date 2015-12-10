@@ -5,7 +5,7 @@ class ButtonListener:
 	def __init__(self, pin):
 		self._pin = pin
 		
-		self._thread_started = theading.Event()
+		self._thread_started = threading.Event()
 		self._thread = threading.Thread(target=self._listener)
 		self._thread.setDaemon(True)
 		
