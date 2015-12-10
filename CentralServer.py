@@ -141,8 +141,7 @@ class CentralServer:
 		except KeyboardInterrupt:
 			pass
 		finally:
-			self._connect_chan.stop_consuming()
-			self._response_chan.stop_consuming()
+			self._chan.stop_consuming()
 			self._log.info("Shutting down server...")
 			self._log.info("Closing connection with RabbitMQ")
 			if self._conn is not None:
