@@ -71,6 +71,7 @@ class CentralServer:
 				no_ack=True, 
 				exclusive=True, 
 			)
+		self._queue_name = queueResult.method.queue
 		
 		server_ip, ifaceName = self._get_service_ip()
 		if server_ip is None:
@@ -121,10 +122,16 @@ class CentralServer:
 						state = "WAIT_FOR_RESPONSE"
 				elif state == "WAIT_FOR_RESPONSE":
 					timeElapsed = math.floor(time.time() - startTime)
+					msg = channel.basic_get(queue=self._queue_name, no_ack=True)
 					# If nodes respond, pick a node from the list of responses and display it
-					if len(self._responses) > 0:
-						self._log.info("RESPONSES RECEIVED %s" % str(self._responses))
-						self._accept_responses.clear()
+					if msg[0] is not None and msg[1] is not None and msg[2] is not None:
+						self._log.info("RESPONSES RECEIVED %s" % str(msg[3]))
+						
+						self._display.set_mode(0)
+						time.sleep(0.5)
+						self._display.set_message("TABLE %s IS FREE" % str(msg[3])
+						self._display.set_mode(2)
+						
 						state = "DISPLAY_RESULT"
 					# Or if 30 seconds pass then all tables are probably full
 					elif timeElapsed > 30:
