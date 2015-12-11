@@ -31,6 +31,7 @@ if info.properties:
 
 print("\n")
 
+msg_recvd = threading.Event()
 def callback(ch, method, properties, body):
 	print "MSG: %s" % body
 	msg_recvd.set()
@@ -47,8 +48,6 @@ channel.start_consuming()
 display = DisplayRunner.DisplayRunner()
 display.setmode(0)
 display.start()
-
-msg_recvd = threading.Event()
 
 GPIO.set_mode(GPIO.BOARD)
 GPIO.setup(37, GPIO.IN)
