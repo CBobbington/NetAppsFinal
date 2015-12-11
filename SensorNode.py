@@ -85,13 +85,13 @@ try:
 				display.set_mode(2)
 	#State 2 is when the table is reserved
 		elif state == "RESERVE":
-			if listener.button_pressed()and time.time() > wait600:
+			if GPIO.input(37) or time.time() > wait600:
 				display.set_mode(0)
 				state = "IDLE"
 	#State 3 is when the pi ignores requests
 		elif state == "IGNORE":	
 			now = time.time()
-			if listener.button_pressed():
+			if GPIO.input(37):
 				display.set_mode(0)
 				state = "IDLE"
 			else:
