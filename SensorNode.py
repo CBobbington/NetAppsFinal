@@ -35,7 +35,7 @@ result = channel.queue_declare(auto_delete = True)
 queue_name = result.method.queue
 
 display = DisplayRunner.DisplayRunner()
-display.set_mode(0)
+display.setmode(0)
 display.start()
 
 msg_recvd = threading.Event()
