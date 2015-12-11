@@ -110,6 +110,7 @@ class CentralServer:
 					# Otherwise if the user presses the button, ping the network and wait
 					elif GPIO.input(self._pin):
 						self._accept_responses.set()
+						self.ping()
 						
 						self._display.set_mode(0)
 						time.sleep(0.5)
@@ -118,7 +119,6 @@ class CentralServer:
 						time.sleep(1)
 						
 						startTime = time.time()
-						self.ping()
 						state = "WAIT_FOR_RESPONSE"
 				elif state == "WAIT_FOR_RESPONSE":
 					timeElapsed = math.floor(time.time() - startTime)
