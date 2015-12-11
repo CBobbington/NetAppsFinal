@@ -179,7 +179,7 @@ class CentralServer:
 	def ping(self):
 		self._display.set_mode(0)
 		self._responses = []
-		_log.info("Pinging network...")
+		self._log.info("Pinging network...")
 		tempConn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost', virtual_host=self._vhost))
 		tempChan = tempConn.channel()
 		tempChan.queue_declare(queue=str(dest), passive=True)
