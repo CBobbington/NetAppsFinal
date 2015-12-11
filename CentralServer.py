@@ -12,9 +12,9 @@ import threading
 
 class CentralServer:
 	_server_name = "CentralServer"
-	_vhost = ""
-	_exchange = "sense_net"
-	_routing_key = "central_response"
+	_vhost = "/bottle"
+	_exchange = "pebble"
+	_routing_key = "central"
 		
 	def _get_service_name(self):
 		return CentralServer._server_name + "._http._tcp.local."
@@ -60,7 +60,7 @@ class CentralServer:
 			raise RuntimeError("Error configuring RabbitMQ")
 		else:
 			self._log.info("Created queue \'%s\'" % (queueResult.method.queue,))
-			self._log.info("Using exchange \'%s\'" % (self._exchange,))
+			self._log.info("Using exchange \'%s\\%s\'" % (self._vhost, self._exchange,))
 			self._chan.exchange_declare(exchange=self._exchange, type="topic", auto_delete=True)
 			self._chan.queue_bind(exchange=self._exchange, queue=queueResult.method.queue, routing_key=self._routing_key)
 			self._chan.basic_consume(
@@ -70,25 +70,20 @@ class CentralServer:
 				exclusive=True, 
 			)
 		
-		# Configure zeroconf to broadcast this service
-		self._zeroconf = Zeroconf()
-
 		server_ip, ifaceName = self._get_service_ip()
 		if server_ip is None:
 			self._log.error("Could not determine server IP")
 			raise RuntimeError("Error finding server IP")
 		else:
-			self._log.info("Broadcasting with IP %s (%s)" % (server_ip, ifaceName))
+			self._log.info("Broadcasting service %s with IP %s (%s)" % (self._get_service_name(), server_ip, ifaceName))
 		
+		# Configure zeroconf to broadcast this service
+		self._zeroconf = Zeroconf()
 		self._zeroconf_info = ServiceInfo("_http._tcp.local.",
 			self._get_service_name(),
 			socket.inet_aton(server_ip),
 			5672, 0, 0,
-			{
-				"virtual_host": self._vhost,
-				"exchange_name": self._exchange, 
-				"routing_key": self._routing_key, 
-			},
+			{"exchange_name": self._exchange, "routing_key": self._routing_key, "virtual_host": self._vhost},
 			None)
 		
 		try:
@@ -118,7 +113,7 @@ class CentralServer:
 					if len(responses) > 0:
 						self._accept_responses.unset()
 						state = "DISPLAY_RESULT"
-					elif timeElapsed > 15:
+					elif timeElapsed > 30:
 						self._accept_responses.unset()
 						state = "DISPLAY_TIMEOUT"
 					elif self._button_listener.button_pressed():
@@ -166,6 +161,6 @@ class CentralServer:
 		print "MSG: %s" % body
 
 if __name__ == "__main__":
-	server = CentralServer(22)
+	server = CentralServer(21)
 	server.start()
 		
