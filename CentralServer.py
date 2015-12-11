@@ -50,7 +50,6 @@ class CentralServer:
 		self._display = DisplayRunner.DisplayRunner()
 		self._display.set_mode(0)
 		self._display.start()
-		self._display.stop()
 			
 		self._new_connections = []
 		self._accept_responses = threading.Event()
@@ -102,9 +101,8 @@ class CentralServer:
 		try:
 			while True:
 				if state == "IDLE_INIT":
-					self._button_listener.start()
 					self._display.set_message("NEED A TABLE?")
-					self._display.start()
+					self._display.set_mode(2)
 					state = "IDLE"
 				elif state == "IDLE":
 					# If new nodes join the network, display them on the screen
@@ -114,9 +112,10 @@ class CentralServer:
 					# Otherwise if the user presses the button, ping the network and wait
 					elif self._button_listener.button_pressed():
 						self._accept_responses.set()
-						self._display.stop()
+						
 						self._display.set_message("SEARCHING...")
-						self._display.start()
+						self._display.set_mode(2)
+						
 						startTime = time.time()
 						self.ping()
 						state = "WAIT_FOR_RESPONSE"
@@ -128,20 +127,18 @@ class CentralServer:
 						state = "DISPLAY_RESULT"
 					# Or if 30 seconds pass then all tables are probably full
 					elif timeElapsed > 30:
-						self._display.stop()
 						self._display.set_message("SORRY, COULDN'T FIND ANYTING!")
-						self._display.start()
-						startTime = time.time()
+						self._display.set_mode(2)
 						
+						startTime = time.time()
 						self._accept_responses.unset()
 						state = "DISPLAY_TIMEOUT"
 					# ... Or if the user presses the button, cancel the request
 					elif self._button_listener.button_pressed():
-						self._display.stop()
 						self._display.set_message("REQUEST CANCELLED")
-						self._display.start()
-						startTime = time.time()
+						self._display.set_mode(2)
 						
+						startTime = time.time()
 						self._accept_responses.unset()
 						state = "REQ_CANCEL"
 				elif state == "DISPLAY_RESULT":
@@ -149,17 +146,17 @@ class CentralServer:
 					state = "IDLE"
 				elif state == "DISPLAY_TIMEOUT":
 					if time.time() > (startTime + 15):
-						self._display.stop()
 						self._display.set_message("NEED A TABLE?")
 						self._display.start()
+						
 						state = "IDLE"
 					time.sleep(1)
 				elif state == "REQ_CANCEL":
 					# Display cancelled message
 					if time.time() > (starTime + 15):
-						self._display.stop()
 						self._display.set_message("NEED A TABLE?")
 						self._display.start()
+						
 						state = "IDLE"
 					state = "IDLE"
 					time.sleep(1)
