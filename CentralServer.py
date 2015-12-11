@@ -162,7 +162,7 @@ class CentralServer:
 					time.sleep(1)
 				elif state == "REQ_CANCEL":
 					# Display cancelled message
-					if time.time() > (starTime + 15):
+					if time.time() > (startTime + 15):
 						self._display.set_mode(0)
 						time.sleep(0.5)
 						self._display.set_message("NEED A TABLE?")
