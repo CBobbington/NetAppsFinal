@@ -182,7 +182,7 @@ class CentralServer:
 		self._log.info("Pinging network...")
 		tempConn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost', virtual_host=self._vhost))
 		tempChan = tempConn.channel()
-		tempChan.basic_publish(exchange=self._exchange, routing_key="node")
+		tempChan.basic_publish(exchange=self._exchange, routing_key="node", body="")
 		tempConn.close()
 		
 	def _consume(self, ch, method, properties, body):
