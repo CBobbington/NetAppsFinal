@@ -56,7 +56,7 @@ class CentralServer:
 		self._conn = pika.BlockingConnection(pika.ConnectionParameters(host="localhost", virtual_host=self._vhost))	
 		self._chan = self._conn.channel()
 		
-		queueResult = self._chan.queue_declare(auto_delete = True)
+		queueResult = self._chan.queue_declare(auto_delete=True)
 		if queueResult is None:
 			self._log.error("Could not create connect queue")
 			raise RuntimeError("Error configuring RabbitMQ")
@@ -65,12 +65,7 @@ class CentralServer:
 			self._log.info("Using exchange \'%s/%s\'" % (self._vhost, self._exchange,))
 			self._chan.exchange_declare(exchange=self._exchange, type="topic", auto_delete=True)
 			self._chan.queue_bind(exchange=self._exchange, queue=queueResult.method.queue, routing_key=self._routing_key)
-			self._chan.basic_consume(
-				lambda ch, method, prop, body: self._consume(ch, method, prop, body),
-				queueResult.method.queue, 
-				no_ack=True, 
-				exclusive=True, 
-			)
+			
 		self._queue_name = queueResult.method.queue
 		
 		server_ip, ifaceName = self._get_service_ip()
