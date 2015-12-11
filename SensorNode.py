@@ -30,7 +30,7 @@ print("\n")
 credentials = pika.PlainCredentials('client','bottle_pass')
 connection = pika.BlockingConnection(pika.ConnectionParameters(socket.inet_ntoa(info.address),info.port, '/bottle', credentials))
 channel = connection.channel()
-channel.exchange_declare(exchange = "sensor_node", passive = True)
+channel.exchange_declare(exchange = "pebble", passive = True)
 result = channel.queue_declare(auto_delete = True)
 queue_name = result.method.queue
 
