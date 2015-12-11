@@ -100,9 +100,11 @@ class CentralServer:
 					self._button_listener.start()
 					state = "IDLE"
 				elif state == "IDLE":
+					# If new nodes join the network, display them on the screen
 					if len(self._new_connections) > 0:
 						# Display / log newly connected nodes, if present
 						pass
+					# Otherwise if the user presses the button, ping the network and wait
 					elif self._button_listener.button_pressed():
 						self._accept_responses.set()
 						startTime = time.time()
@@ -110,12 +112,15 @@ class CentralServer:
 						state = "WAIT_FOR_RESPONSE"
 				elif state == "WAIT_FOR_RESPONSE":
 					timeElapsed = math.floor(time.time() - startTime)
-					if len(responses) > 0:
+					# If nodes respond, pick a node from the list of responses and display it
+					if len(self._responses) > 0:
 						self._accept_responses.unset()
 						state = "DISPLAY_RESULT"
+					# Or if 30 seconds pass then all tables are probably full
 					elif timeElapsed > 30:
 						self._accept_responses.unset()
 						state = "DISPLAY_TIMEOUT"
+					# ... Or if the user presses the button, cancel the request
 					elif self._button_listener.button_pressed():
 						self._accept_responses.unset()
 						state = "REQ_CANCEL"
@@ -123,7 +128,7 @@ class CentralServer:
 						# Display time left on display
 						pass
 				elif state == "DISPLAY_RESULT":
-					# Display result
+					# Display node to go to
 					state = "IDLE"
 				elif state == "DISPLAY_TIMEOUT":
 					# Display timeout message
