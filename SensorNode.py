@@ -42,8 +42,6 @@ channel = connection.channel()
 channel.exchange_declare(exchange = "pebble", passive = True)
 result = channel.queue_declare(auto_delete = True)
 channel.queue_bind(exchange="pebble", queue=result.method.queue, routing_key="node")
-channel.basic_consume(callback, result.method.queue, no_ack=True, exclusive=True)
-channel.start_consuming()
 
 display = DisplayRunner.DisplayRunner()
 display.setmode(0)
@@ -59,6 +57,7 @@ try:
 	while True:
 	#State 0 is idle
 		if state == "IDLE":
+			print channel.basic_get()
 			if msg_recvd.is_set():
 				if get_prob_occupied() < .5:
 					state = "QUERY"
