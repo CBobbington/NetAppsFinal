@@ -56,7 +56,7 @@ class CentralServer:
 		self._conn = pika.BlockingConnection(pika.ConnectionParameters(host="localhost", virtual_host=self._vhost))	
 		self._chan = self._conn.channel()
 		
-		queueResult = self._chan.queue_declare(exclusive=True)
+		queueResult = self._chan.queue_declare(auto_delete = True)
 		if queueResult is None:
 			self._log.error("Could not create connect queue")
 			raise RuntimeError("Error configuring RabbitMQ")
