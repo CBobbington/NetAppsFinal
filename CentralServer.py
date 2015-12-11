@@ -125,6 +125,7 @@ class CentralServer:
 					timeElapsed = math.floor(time.time() - startTime)
 					msg = self._chan.basic_get(queue=self._queue_name, no_ack=True)
 					# If nodes respond, pick a node from the list of responses and display it
+					self._log.info(str(msg))
 					if msg[0] is not None:
 						self._log.info("RESPONSES RECEIVED %s" % str(msg[3]))
 						
