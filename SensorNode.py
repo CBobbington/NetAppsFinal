@@ -62,12 +62,13 @@ try:
 				if get_prob_occupied() < .5:
 					state = "QUERY"
 					
+					channel.basic_publish(exchange = info.properties['exchange_name'], routing_key = info.properties['routing_key'], body = str(TABLE_NUM))
+					
 					display.set_message("ARE YOU STILL THERE?")
 					display.set_mode(2)
 					display.start()
 					
 					wait30 = time.time() + 30
-				msg_recvd.clear()
 	#State 1 is waiting for user input
 		elif state == "QUERY":
 			now = time.time()
@@ -78,8 +79,6 @@ try:
 				display.set_mode(3)
 				state = "RESERVE"
 				wait600 = time.time() + 600
-				
-				channel.basic_publish(exchange = info.properties['exchange_name'], routing_key = info.properties['routing_key'], body = str(TABLE_NUM))
 				
 				display.set_mode(0)
 				time.sleep(0.5)
