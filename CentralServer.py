@@ -129,6 +129,7 @@ class CentralServer:
 						self._display.set_message("TABLE %s IS FREE" % str(msg[2]))
 						self._display.set_mode(2)
 						
+						startTime = time.time()
 						state = "DISPLAY_RESULT"
 					# Or if 30 seconds pass then all tables are probably full
 					elif timeElapsed > 45:
@@ -153,7 +154,7 @@ class CentralServer:
 						self._accept_responses.clear()
 						state = "REQ_CANCEL"
 				elif state == "DISPLAY_RESULT":
-					if time.time() > (startTime + 15):
+					if time.time() > (startTime + 30):
 						self._display.set_mode(0)
 						time.sleep(0.5)
 						self._display.set_message("NEED A TABLE?")
@@ -161,7 +162,7 @@ class CentralServer:
 						
 						state = "IDLE"
 				elif state == "DISPLAY_TIMEOUT":
-					if time.time() > (startTime + 5):
+					if time.time() > (startTime + 10):
 						self._display.set_mode(0)
 						time.sleep(0.5)
 						self._display.set_message("NEED A TABLE?")
