@@ -160,7 +160,6 @@ class CentralServer:
 					time.sleep(1)
 				else:
 					state = "IDLE_INIT"
-				sleep(1)
 		except KeyboardInterrupt:
 			pass
 		finally:
