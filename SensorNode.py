@@ -61,8 +61,6 @@ try:
 			if msg[0] is not None and get_prob_occupied() > 0.5:
 				state = "QUERY"
 				
-				channel.basic_publish(exchange = info.properties['exchange_name'], routing_key = info.properties['routing_key'], body = str(TABLE_NUM))
-				
 				display.set_message("ARE YOU STILL THERE?")
 				display.set_mode(2)
 				display.start()
@@ -73,9 +71,10 @@ try:
 			now = time.time()
 			if GPIO.input(37):
 				state = "IGNORE"
+				display.set_mode(3)
 				wait600 = time.time() + 600
 			elif time.time() > wait30:
-				display.set_mode(3)
+				channel.basic_publish(exchange = info.properties['exchange_name'], routing_key = info.properties['routing_key'], body = str(TABLE_NUM))
 				state = "RESERVE"
 				wait600 = time.time() + 600
 				
