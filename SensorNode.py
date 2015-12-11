@@ -74,7 +74,7 @@ try:
 				display.set_mode(3)
 				wait600 = time.time() + 600
 			elif time.time() > wait30:
-				tempConn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost', virtual_host=self._vhost))
+				tempConn = pika.BlockingConnection(pika.ConnectionParameters(socket.inet_ntoa(info.address),info.port, '/bottle', credentials))
 				tempChan = tempConn.channel()
 				tempChan.basic_publish(exchange="pebble", routing_key="central", body=str(TABLE_NUM))
 				tempConn.close()
