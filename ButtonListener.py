@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import threading
+import time
 
 class Listener:
 	def __init__(self, pin):
@@ -36,6 +37,7 @@ class Listener:
 		while self._thread_started.is_set():
 			if GPIO.input(self._pin):
 				self._is_triggered.set()
+				time.sleep(1)
 			else:
 				self._is_triggered.clear()
 		self._is_triggered.unset()
