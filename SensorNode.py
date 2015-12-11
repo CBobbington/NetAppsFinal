@@ -57,7 +57,7 @@ try:
 	while True:
 	#State 0 is idle
 		if state == "IDLE":
-			print channel.basic_get()
+			print channel.basic_get(queue=result.method.queue, no_ack=True)
 			if msg_recvd.is_set():
 				if get_prob_occupied() < .5:
 					state = "QUERY"
