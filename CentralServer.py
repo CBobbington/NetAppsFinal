@@ -153,7 +153,7 @@ class CentralServer:
 						self._display.set_mode(0)
 						time.sleep(0.5)
 						self._display.set_message("NEED A TABLE?")
-						self._display.start()
+						self._display.set_mode(2)
 						
 						state = "IDLE"
 					time.sleep(1)
@@ -163,7 +163,7 @@ class CentralServer:
 						self._display.set_mode(0)
 						time.sleep(0.5)
 						self._display.set_message("NEED A TABLE?")
-						self._display.start()
+						self._display.set_mode(2)
 						
 						state = "IDLE"
 					state = "IDLE"
