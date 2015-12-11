@@ -47,7 +47,7 @@ display = DisplayRunner.DisplayRunner()
 display.set_mode(0)
 display.start()
 
-GPIO.set_mode(GPIO.BOARD)
+GPIO.setmode(GPIO.BOARD)
 GPIO.setup(37, GPIO.IN)
 	
 def get_prob_occupied():
