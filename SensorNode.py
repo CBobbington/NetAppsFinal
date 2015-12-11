@@ -58,17 +58,16 @@ try:
 	#State 0 is idle
 		if state == "IDLE":
 			msg = channel.basic_get(queue=result.method.queue, no_ack=True)
-			if msg[0] is not None:
-				if get_prob_occupied() < .5:
-					state = "QUERY"
-					
-					channel.basic_publish(exchange = info.properties['exchange_name'], routing_key = info.properties['routing_key'], body = str(TABLE_NUM))
-					
-					display.set_message("ARE YOU STILL THERE?")
-					display.set_mode(2)
-					display.start()
-					
-					wait30 = time.time() + 30
+			if msg[0] is not None and get_prob_occupied() > 0.5:
+				state = "QUERY"
+				
+				channel.basic_publish(exchange = info.properties['exchange_name'], routing_key = info.properties['routing_key'], body = str(TABLE_NUM))
+				
+				display.set_message("ARE YOU STILL THERE?")
+				display.set_mode(2)
+				display.start()
+				
+				wait30 = time.time() + 30
 	#State 1 is waiting for user input
 		elif state == "QUERY":
 			now = time.time()
