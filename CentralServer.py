@@ -103,6 +103,8 @@ class CentralServer:
 			while True:
 				if state == "IDLE_INIT":
 					self._button_listener.start()
+					self._display.set_message("NEED A TABLE?")
+					self._display.start()
 					state = "IDLE"
 				elif state == "IDLE":
 					# If new nodes join the network, display them on the screen
@@ -112,6 +114,7 @@ class CentralServer:
 					# Otherwise if the user presses the button, ping the network and wait
 					elif self._button_listener.button_pressed():
 						self._accept_responses.set()
+						self._display.stop()
 						self._display.set_message("SEARCHING...")
 						self._display.start()
 						startTime = time.time()
@@ -147,12 +150,16 @@ class CentralServer:
 				elif state == "DISPLAY_TIMEOUT":
 					if time.time() > (startTime + 15):
 						self._display.stop()
+						self._display.set_message("NEED A TABLE?")
+						self._display.start()
 						state = "IDLE"
 					time.sleep(1)
 				elif state == "REQ_CANCEL":
 					# Display cancelled message
 					if time.time() > (starTime + 15):
 						self._display.stop()
+						self._display.set_message("NEED A TABLE?")
+						self._display.start()
 						state = "IDLE"
 					state = "IDLE"
 					time.sleep(1)
