@@ -122,11 +122,11 @@ class CentralServer:
 					# If nodes respond, pick a node from the list of responses and display it
 					self._log.info(str(msg))
 					if msg[0] is not None:
-						self._log.info("RESPONSES RECEIVED %s" % str(msg[3]))
+						self._log.info("RESPONSES RECEIVED %s" % str(msg[2]))
 						
 						self._display.set_mode(0)
 						time.sleep(0.5)
-						self._display.set_message("TABLE %s IS FREE" % str(msg[3]))
+						self._display.set_message("TABLE %s IS FREE" % str(msg[2]))
 						self._display.set_mode(2)
 						
 						state = "DISPLAY_RESULT"
