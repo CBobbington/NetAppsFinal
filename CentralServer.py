@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from zeroconf import Zeroconf, ServiceInfo
-import ButtonListener
+import ButtonListener, DisplayRunner
 import netifaces, socket
 import logging, logging.config
 import json, shelve
@@ -46,6 +46,11 @@ class CentralServer:
 		except RuntimeError:
 			self._log.error("Could not configure GPIO pins!")
 			raise RuntimeError("Error configuring GPIO")
+			
+		self._display = DisplayRunner.DisplayRunner()
+		self._display.set_mode(0)
+		self._display.start()
+		self._display.stop()
 			
 		self._new_connections = []
 		self._accept_responses = threading.Event()
@@ -107,6 +112,8 @@ class CentralServer:
 					# Otherwise if the user presses the button, ping the network and wait
 					elif self._button_listener.button_pressed():
 						self._accept_responses.set()
+						self._display.set_message("SEARCHING...")
+						self._display.start()
 						startTime = time.time()
 						self.ping()
 						state = "WAIT_FOR_RESPONSE"
@@ -118,24 +125,37 @@ class CentralServer:
 						state = "DISPLAY_RESULT"
 					# Or if 30 seconds pass then all tables are probably full
 					elif timeElapsed > 30:
+						self._display.stop()
+						self._display.set_message("SORRY, COULDN'T FIND ANYTING!")
+						self._display.start()
+						startTime = time.time()
+						
 						self._accept_responses.unset()
 						state = "DISPLAY_TIMEOUT"
 					# ... Or if the user presses the button, cancel the request
 					elif self._button_listener.button_pressed():
+						self._display.stop()
+						self._display.set_message("REQUEST CANCELLED")
+						self._display.start()
+						startTime = time.time()
+						
 						self._accept_responses.unset()
 						state = "REQ_CANCEL"
-					else:
-						# Display time left on display
-						pass
 				elif state == "DISPLAY_RESULT":
 					# Display node to go to
 					state = "IDLE"
 				elif state == "DISPLAY_TIMEOUT":
-					# Display timeout message
-					state = "IDLE"
+					if time.time() > (startTime + 15):
+						self._display.stop()
+						state = "IDLE"
+					time.sleep(1)
 				elif state == "REQ_CANCEL":
 					# Display cancelled message
+					if time.time() > (starTime + 15):
+						self._display.stop()
+						state = "IDLE"
 					state = "IDLE"
+					time.sleep(1)
 				else:
 					state = "IDLE_INIT"
 		except KeyboardInterrupt:
