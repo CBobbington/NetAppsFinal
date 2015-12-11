@@ -116,7 +116,6 @@ class CentralServer:
 						time.sleep(0.5)
 						self._display.set_message("SEARCHING...")
 						self._display.set_mode(2)
-						time.sleep(1)
 						
 						startTime = time.time()
 						state = "WAIT_FOR_RESPONSE"
@@ -134,7 +133,6 @@ class CentralServer:
 						time.sleep(0.5)
 						self._display.set_message("SORRY, COULDN'T FIND ANYTING!")
 						self._display.set_mode(2)
-						time.sleep(1)
 						
 						startTime = time.time()
 						self._accept_responses.clear()
@@ -146,7 +144,6 @@ class CentralServer:
 						time.sleep(0.5)
 						self._display.set_message("REQUEST CANCELLED")
 						self._display.set_mode(2)
-						time.sleep(1)
 						
 						startTime = time.time()
 						self._accept_responses.clear()
@@ -180,6 +177,7 @@ class CentralServer:
 		except KeyboardInterrupt:
 			pass
 		finally:
+			self._display.set_mode(0)
 			self._chan.stop_consuming()
 			self._log.info("Shutting down server...")
 			self._log.info("Closing connection with RabbitMQ")
@@ -193,7 +191,6 @@ class CentralServer:
 			self._log.info("Shutdown complete!")
 		
 	def ping(self):
-		self._display.set_mode(0)
 		self._responses = []
 		self._log.info("Pinging network...")
 		tempConn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost', virtual_host=self._vhost))
