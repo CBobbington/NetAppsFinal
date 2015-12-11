@@ -34,9 +34,6 @@ channel.exchange_declare(exchange = "pebble", passive = True)
 result = channel.queue_declare(auto_delete = True)
 queue_name = result.method.queue
 
-listener = ButtonListener.listener()
-listener.start()
-
 display = DisplayRunner.DisplayRunner()
 display.set_mode(0)
 display.start()

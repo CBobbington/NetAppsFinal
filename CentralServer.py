@@ -62,7 +62,7 @@ class CentralServer:
 			raise RuntimeError("Error configuring RabbitMQ")
 		else:
 			self._log.info("Created queue \'%s\'" % (queueResult.method.queue,))
-			self._log.info("Using exchange \'%s\\%s\'" % (self._vhost, self._exchange,))
+			self._log.info("Using exchange \'%s/%s\'" % (self._vhost, self._exchange,))
 			self._chan.exchange_declare(exchange=self._exchange, type="topic", auto_delete=True)
 			self._chan.queue_bind(exchange=self._exchange, queue=queueResult.method.queue, routing_key=self._routing_key)
 			self._chan.basic_consume(
