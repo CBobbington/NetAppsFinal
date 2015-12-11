@@ -135,7 +135,7 @@ class CentralServer:
 						
 						state = "DISPLAY_RESULT"
 					# Or if 30 seconds pass then all tables are probably full
-					elif timeElapsed > 30:
+					elif timeElapsed > 45:
 						self._log.info("REQUEST TIMED OUT")
 						self._display.set_mode(0)
 						time.sleep(0.5)
@@ -165,7 +165,7 @@ class CentralServer:
 						
 						state = "IDLE"
 				elif state == "DISPLAY_TIMEOUT":
-					if time.time() > (startTime + 15):
+					if time.time() > (startTime + 5):
 						self._display.set_mode(0)
 						time.sleep(0.5)
 						self._display.set_message("NEED A TABLE?")
@@ -174,7 +174,7 @@ class CentralServer:
 						state = "IDLE"
 				elif state == "REQ_CANCEL":
 					# Display cancelled message
-					if time.time() > (startTime + 15):
+					if time.time() > (startTime + 5):
 						self._display.set_mode(0)
 						time.sleep(0.5)
 						self._display.set_message("NEED A TABLE?")
