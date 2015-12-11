@@ -159,7 +159,6 @@ class CentralServer:
 						self._display.set_mode(2)
 						
 						state = "IDLE"
-					time.sleep(1)
 				elif state == "REQ_CANCEL":
 					# Display cancelled message
 					if time.time() > (startTime + 15):
@@ -169,8 +168,6 @@ class CentralServer:
 						self._display.set_mode(2)
 						
 						state = "IDLE"
-					state = "IDLE"
-					time.sleep(1)
 				else:
 					state = "IDLE_INIT"
 				time.sleep(0.5)
