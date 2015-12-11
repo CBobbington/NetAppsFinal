@@ -17,7 +17,11 @@ wait30 = time.time()
 wait600 = time.time()
 
 zeroconf = Zeroconf()
-info = zeroconf.get_service_info('_http._tcp.local.', 'CentralServer._http._tcp.local.')
+info = None
+
+while info is None:
+	info = zeroconf.get_service_info('_http._tcp.local.', 'CentralServer._http._tcp.local.')
+
 print( "Address: %s:%d" % (socket.inet_ntoa(info.address), info.port))
 print( "Server: %s" % (info.server))
 if info.properties:
@@ -27,12 +31,18 @@ if info.properties:
 
 print("\n")
 
+def callback(ch, method, properties, body):
+	print "MSG: %s" % body
+	msg_recvd.set()
+
 credentials = pika.PlainCredentials('client','bottle_pass')
 connection = pika.BlockingConnection(pika.ConnectionParameters(socket.inet_ntoa(info.address),info.port, '/bottle', credentials))
 channel = connection.channel()
 channel.exchange_declare(exchange = "pebble", passive = True)
 result = channel.queue_declare(auto_delete = True)
-queue_name = result.method.queue
+channel.queue_bind(exchange="pebble", queue=result.method.queue, routing_key="node")
+channel.basic_consume(callback, result.method.queue, no_ack=True, exclusive=True)
+channel.start_consuming()
 
 display = DisplayRunner.DisplayRunner()
 display.setmode(0)
@@ -42,9 +52,6 @@ msg_recvd = threading.Event()
 
 GPIO.set_mode(GPIO.BOARD)
 GPIO.setup(37, GPIO.IN)
-
-def callback(ch, method, properties, body):
-	msg_recvd.set()
 	
 def get_prob_occupied():
 	return 1
