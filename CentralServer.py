@@ -23,10 +23,10 @@ class CentralServer:
 		wlanIfaceAddrs = netifaces.ifaddresses('wlan0')
 		ethIfaceAddrs = netifaces.ifaddresses('eth0')
 
-		if netifaces.AF_INET in wlanIfaceAddrs and "addr" in wlanIfaceAddrs[netifaces.AF_INET][0]:
-			return wlanIfaceAddrs[netifaces.AF_INET][0]["addr"], "wlan0"
-		elif netifaces.AF_INET in ethIfaceAddrs and "addr" in ethIfaceAddrs[netifaces.AF_INET][0]:
+		if netifaces.AF_INET in ethIfaceAddrs and "addr" in ethIfaceAddrs[netifaces.AF_INET][0]:
 			return ethIfaceAddrs[netifaces.AF_INET][0]["addr"], "eth0"
+		elif netifaces.AF_INET in wlanIfaceAddrs and "addr" in wlanIfaceAddrs[netifaces.AF_INET][0]:
+			return wlanIfaceAddrs[netifaces.AF_INET][0]["addr"], "wlan0"
 		else:
 			return None, None
 		
