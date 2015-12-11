@@ -115,6 +115,7 @@ class CentralServer:
 						time.sleep(0.5)
 						self._display.set_message("SEARCHING...")
 						self._display.set_mode(2)
+						time.sleep(1)
 						
 						startTime = time.time()
 						self.ping()
@@ -123,24 +124,29 @@ class CentralServer:
 					timeElapsed = math.floor(time.time() - startTime)
 					# If nodes respond, pick a node from the list of responses and display it
 					if len(self._responses) > 0:
+						self._log.info("RESPONSES RECEIVED %s" % str(self._responses))
 						self._accept_responses.clear()
 						state = "DISPLAY_RESULT"
 					# Or if 30 seconds pass then all tables are probably full
 					elif timeElapsed > 30:
+						self._log.info("REQUEST TIMED OUT")
 						self._display.set_mode(0)
 						time.sleep(0.5)
 						self._display.set_message("SORRY, COULDN'T FIND ANYTING!")
 						self._display.set_mode(2)
+						time.sleep(1)
 						
 						startTime = time.time()
 						self._accept_responses.clear()
 						state = "DISPLAY_TIMEOUT"
 					# ... Or if the user presses the button, cancel the request
 					elif GPIO.input(self._pin):
+						self._log.info("REQUEST CANCELLED")
 						self._display.set_mode(0)
 						time.sleep(0.5)
 						self._display.set_message("REQUEST CANCELLED")
 						self._display.set_mode(2)
+						time.sleep(1)
 						
 						startTime = time.time()
 						self._accept_responses.clear()
