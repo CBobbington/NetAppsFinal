@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from zeroconf import Zeroconf, ServiceInfo
-import ButtonListener, DisplayRunner
+import DisplayRunner
 import netifaces, socket
 import logging, logging.config
 import json, shelve
@@ -31,7 +31,11 @@ class CentralServer:
 			return None, None
 		
 	def __init__(self, listen_pin):
-		self._gpio_en = None
+		GPIO.setwarnings(False)
+		GPIO.setmode(GPIO.BOARD)
+		GPIO.setup(listen_pin, GPIO.IN)
+		self._pin = listen_pin
+		
 		self._log_fmt = logging.Formatter(fmt="%(asctime)s [%(levelname)-8s] %(message)s", datefmt="%b %d %H:%M:%S")
 		self._log = logging.getLogger()
 		self._log.setLevel(logging.INFO)
@@ -41,12 +45,6 @@ class CentralServer:
 		streamHandler.setFormatter(self._log_fmt)
 		self._log.addHandler(streamHandler)
 		
-		try:
-			self._button_listener = ButtonListener.Listener(listen_pin)
-		except RuntimeError:
-			self._log.error("Could not configure GPIO pins!")
-			raise RuntimeError("Error configuring GPIO")
-			
 		self._display = DisplayRunner.DisplayRunner()
 		self._display.set_mode(0)
 		self._display.start()
@@ -110,7 +108,7 @@ class CentralServer:
 						# Display / log newly connected nodes, if present
 						pass
 					# Otherwise if the user presses the button, ping the network and wait
-					elif self._button_listener.button_pressed():
+					elif GPIO.input(self._pin):
 						self._accept_responses.set()
 						
 						self._display.set_message("SEARCHING...")
@@ -134,7 +132,7 @@ class CentralServer:
 						self._accept_responses.unset()
 						state = "DISPLAY_TIMEOUT"
 					# ... Or if the user presses the button, cancel the request
-					elif self._button_listener.button_pressed():
+					elif GPIO.input(self._pin):
 						self._display.set_message("REQUEST CANCELLED")
 						self._display.set_mode(2)
 						
