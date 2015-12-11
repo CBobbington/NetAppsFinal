@@ -31,7 +31,10 @@ class Listener:
 			self._thread.join()
 			
 	def button_pressed(self):
-		return self._is_triggered.is_set()
+		to_return = self._is_triggered.is_set()
+		if to_return:
+			self._is_triggered.unset()
+		return to_return
 	
 	def _listener(self):
 		while self._thread_started.is_set():
