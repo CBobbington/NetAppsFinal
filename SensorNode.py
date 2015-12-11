@@ -44,7 +44,7 @@ result = channel.queue_declare(auto_delete = True)
 channel.queue_bind(exchange="pebble", queue=result.method.queue, routing_key="node")
 
 display = DisplayRunner.DisplayRunner()
-display.setmode(0)
+display.set_mode(0)
 display.start()
 
 GPIO.set_mode(GPIO.BOARD)
