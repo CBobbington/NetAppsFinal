@@ -111,6 +111,8 @@ class CentralServer:
 					elif GPIO.input(self._pin):
 						self._accept_responses.set()
 						
+						self._display.set_mode(0)
+						time.sleep(0.5)
 						self._display.set_message("SEARCHING...")
 						self._display.set_mode(2)
 						
@@ -121,29 +123,35 @@ class CentralServer:
 					timeElapsed = math.floor(time.time() - startTime)
 					# If nodes respond, pick a node from the list of responses and display it
 					if len(self._responses) > 0:
-						self._accept_responses.unset()
+						self._accept_responses.clear()
 						state = "DISPLAY_RESULT"
 					# Or if 30 seconds pass then all tables are probably full
 					elif timeElapsed > 30:
+						self._display.set_mode(0)
+						time.sleep(0.5)
 						self._display.set_message("SORRY, COULDN'T FIND ANYTING!")
 						self._display.set_mode(2)
 						
 						startTime = time.time()
-						self._accept_responses.unset()
+						self._accept_responses.clear()
 						state = "DISPLAY_TIMEOUT"
 					# ... Or if the user presses the button, cancel the request
 					elif GPIO.input(self._pin):
+						self._display.set_mode(0)
+						time.sleep(0.5)
 						self._display.set_message("REQUEST CANCELLED")
 						self._display.set_mode(2)
 						
 						startTime = time.time()
-						self._accept_responses.unset()
+						self._accept_responses.clear()
 						state = "REQ_CANCEL"
 				elif state == "DISPLAY_RESULT":
 					# Display node to go to
 					state = "IDLE"
 				elif state == "DISPLAY_TIMEOUT":
 					if time.time() > (startTime + 15):
+						self._display.set_mode(0)
+						time.sleep(0.5)
 						self._display.set_message("NEED A TABLE?")
 						self._display.start()
 						
@@ -152,6 +160,8 @@ class CentralServer:
 				elif state == "REQ_CANCEL":
 					# Display cancelled message
 					if time.time() > (starTime + 15):
+						self._display.set_mode(0)
+						time.sleep(0.5)
 						self._display.set_message("NEED A TABLE?")
 						self._display.start()
 						
