@@ -179,6 +179,7 @@ class CentralServer:
 			self._log.info("Shutdown complete!")
 		
 	def ping(self):
+		self._display.set_mode(0)
 		self._responses = []
 		_log.info("Pinging network...")
 		tempConn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost', virtual_host=self._vhost))
