@@ -97,6 +97,7 @@ class CentralServer:
 	def start(self):
 		state = "IDLE_INIT"
 		startTime = None
+		msg = None
 		try:
 			while True:
 				if state == "IDLE_INIT":
@@ -124,7 +125,7 @@ class CentralServer:
 					timeElapsed = math.floor(time.time() - startTime)
 					msg = channel.basic_get(queue=self._queue_name, no_ack=True)
 					# If nodes respond, pick a node from the list of responses and display it
-					if msg[0] is not None and msg[1] is not None and msg[2] is not None:
+					if msg[0] is not None:
 						self._log.info("RESPONSES RECEIVED %s" % str(msg[3]))
 						
 						self._display.set_mode(0)
@@ -156,8 +157,13 @@ class CentralServer:
 						self._accept_responses.clear()
 						state = "REQ_CANCEL"
 				elif state == "DISPLAY_RESULT":
-					# Display node to go to
-					state = "IDLE"
+					if time.time() > (startTime + 15):
+						self._display.set_mode(0)
+						time.sleep(0.5)
+						self._display.set_message("NEED A TABLE?")
+						self._display.set_mode(2)
+						
+						state = "IDLE"
 				elif state == "DISPLAY_TIMEOUT":
 					if time.time() > (startTime + 15):
 						self._display.set_mode(0)
