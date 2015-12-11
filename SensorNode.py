@@ -74,7 +74,11 @@ try:
 				display.set_mode(3)
 				wait600 = time.time() + 600
 			elif time.time() > wait30:
-				channel.basic_publish(exchange = info.properties['exchange_name'], routing_key = info.properties['routing_key'], body = str(TABLE_NUM))
+				tempConn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost', virtual_host=self._vhost))
+				tempChan = tempConn.channel()
+				tempChan.basic_publish(exchange="pebble", routing_key="central", body=str(TABLE_NUM))
+				tempConn.close()
+				
 				state = "RESERVE"
 				wait600 = time.time() + 600
 				
