@@ -130,7 +130,7 @@ class CentralServer:
 						
 						self._display.set_mode(0)
 						time.sleep(0.5)
-						self._display.set_message("TABLE %s IS FREE" % str(msg[3])
+						self._display.set_message("TABLE %s IS FREE" % str(msg[3]))
 						self._display.set_mode(2)
 						
 						state = "DISPLAY_RESULT"
