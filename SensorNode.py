@@ -94,7 +94,7 @@ try:
 					display.set_mode(0)
 					state = "IDLE"
 		print state
-		sleep(0.5)
+		time.sleep(0.5)
 except KeyboardInterrupt:
 	pass	
 finally:
